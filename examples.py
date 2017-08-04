@@ -21,8 +21,8 @@ class DomoSDKExamples:
         # Create an API client on https://developer.domo.com
         # Initialize the Domo SDK with your API client id/secret
         # If you have multiple API clients you would like to use, simply initialize multiple Domo() instances
-        client_id = 'MY_CLIENT_ID'
-        client_secret = 'MY_CLIENT_SECRET'
+        client_id = 'd9538095-4394-462f-8edb-a428087644c9'
+        client_secret = '5f84b1f52d9c9532243d970439e64471b6de2c2436dc4d2af42cbebb928350c2'
         api_host = 'api.domo.com'
 
         ch = logging.StreamHandler()
@@ -58,6 +58,11 @@ class DomoSDKExamples:
         dataset_list = list(datasets.list(sort=Sorting.NAME))
         self.logger.info("Retrieved a list containing " + str(len(dataset_list)) + " DataSet(s)")
 
+        # MM Addition - trying to get the dataset ID
+        for item in dataset_list:
+            if item.name=='Master PBCS Dataset':    # this means we can refer to datasets by name easily
+                print('ID is: ' + item.id)
+
         # Update a DataSets's metadata
         update = DataSetRequest()
         update.name = 'Leonhard Euler Party - Update'
@@ -91,43 +96,43 @@ class DomoSDKExamples:
         # Personalized Data Policies (PDPs)
 
         # Build a Policy Filter (hide sensitive columns/values from users)
-        pdp_filter = PolicyFilter()
-        pdp_filter.column = 'Attending'  # The DataSet column to filter on
-        pdp_filter.operator = FilterOperator.EQUALS
-        pdp_filter.values = ['TRUE']  # The DataSet row value to filter on
-
-        # Build the Personalized Data Policy (PDP)
-        pdp_request = Policy()
-        pdp_request.name = 'Only show friends attending the party'
-        pdp_request.filters = [pdp_filter]  # A single PDP can contain multiple filters
-        pdp_request.type = PolicyType.USER
-        pdp_request.users = [998, 999]  # The affected user ids (restricted access by filter)
-        pdp_request.groups = [99, 100]  # The affected group ids (restricted access by filter)
-
-        # Create the PDP
-        pdp = datasets.create_pdp(dataset.id, pdp_request)
-        self.logger.info("Created a Personalized Data Policy (PDP): " + pdp.name + ", id: " + str(pdp.id))
-
-        # Get a Personalized Data Policy (PDP)
-        retrieved_pdp = datasets.get_pdp(dataset.id, pdp.id)
-        self.logger.info("Retrieved a Personalized Data Policy (PDP): " + retrieved_pdp.name + ", id: " + str(retrieved_pdp.id))
-
-        # List Personalized Data Policies (PDP)
-        pdp_list = datasets.list_pdps(dataset.id)
-        self.logger.info("Retrieved a list containing " + str(len(pdp_list)) + " PDP(s) for DataSet " + str(dataset.id))
-
-        # Update a Personalized Data Policy (PDP)
-        pdp_filter.NOT = True  # Negate the previous filter (logical NOT)
-        pdp_request.name = 'Only show friends not attending the party'
-        pdp_request.filters = [pdp_filter]  # A single PDP can contain multiple filters
-        pdp = datasets.update_pdp(dataset.id, pdp.id, pdp_request)
-        self.logger.info("Updated a Personalized Data Policy (PDP): " + pdp.name + ", id: " + str(pdp.id))
-
-        # Delete a Personalized Data Policy (PDP)
-        datasets.delete_pdp(dataset.id, pdp.id)
-        self.logger.info("Deleted a Personalized Data Policy (PDP) " + pdp.name + ", id: " + str(pdp.id))
-
-        # Delete a DataSet
+        # pdp_filter = PolicyFilter()
+        # pdp_filter.column = 'Attending'  # The DataSet column to filter on
+        # pdp_filter.operator = FilterOperator.EQUALS
+        # pdp_filter.values = ['TRUE']  # The DataSet row value to filter on
+        #
+        # # Build the Personalized Data Policy (PDP)
+        # pdp_request = Policy()
+        # pdp_request.name = 'Only show friends attending the party'
+        # pdp_request.filters = [pdp_filter]  # A single PDP can contain multiple filters
+        # pdp_request.type = PolicyType.USER
+        # pdp_request.users = [998, 999]  # The affected user ids (restricted access by filter)
+        # pdp_request.groups = [99, 100]  # The affected group ids (restricted access by filter)
+        #
+        # # Create the PDP
+        # pdp = datasets.create_pdp(dataset.id, pdp_request)
+        # self.logger.info("Created a Personalized Data Policy (PDP): " + pdp.name + ", id: " + str(pdp.id))
+        #
+        # # Get a Personalized Data Policy (PDP)
+        # retrieved_pdp = datasets.get_pdp(dataset.id, pdp.id)
+        # self.logger.info("Retrieved a Personalized Data Policy (PDP): " + retrieved_pdp.name + ", id: " + str(retrieved_pdp.id))
+        #
+        # # List Personalized Data Policies (PDP)
+        # pdp_list = datasets.list_pdps(dataset.id)
+        # self.logger.info("Retrieved a list containing " + str(len(pdp_list)) + " PDP(s) for DataSet " + str(dataset.id))
+        #
+        # # Update a Personalized Data Policy (PDP)
+        # pdp_filter.NOT = True  # Negate the previous filter (logical NOT)
+        # pdp_request.name = 'Only show friends not attending the party'
+        # pdp_request.filters = [pdp_filter]  # A single PDP can contain multiple filters
+        # pdp = datasets.update_pdp(dataset.id, pdp.id, pdp_request)
+        # self.logger.info("Updated a Personalized Data Policy (PDP): " + pdp.name + ", id: " + str(pdp.id))
+        #
+        # # Delete a Personalized Data Policy (PDP)
+        # datasets.delete_pdp(dataset.id, pdp.id)
+        # self.logger.info("Deleted a Personalized Data Policy (PDP) " + pdp.name + ", id: " + str(pdp.id))
+        #
+        # # Delete a DataSet
         datasets.delete(dataset.id)
         self.logger.info("Deleted DataSet " + str(dataset.id))
 
@@ -215,35 +220,43 @@ class DomoSDKExamples:
         users = self.domo.users
 
         # Build a User
-        user_request = CreateUserRequest()
-        user_request.name = 'Leonhard Euler'
-        user_request.email = 'leonhard.euler' + str(randint(0, 10000)) + '@domo.com'
-        user_request.role = 'Privileged'
-        send_invite = False
+        # user_request = CreateUserRequest()
+        # user_request.name = 'Leonhard Euler'
+        # user_request.email = 'leonhard.euler' + str(randint(0, 10000)) + '@domo.com'
+        # user_request.role = 'Privileged'
+        # send_invite = False
 
         # Create a User
-        user = users.create(user_request, send_invite)
-        self.logger.info("Created User '" + user.name + "'")
+        # user = users.create(user_request, send_invite)
+        # self.logger.info("Created User '" + user.name + "'")
 
         # Get a User
-        user = users.get(user.id)
-        self.logger.info("Retrieved User '" + user.name + "'")
+        # user = users.get(user.id)
+        # self.logger.info("Retrieved User '" + user.name + "'")
 
         # List Users
-        user_list = users.get(user.id)
-        self.logger.info("Retrieved a list containing " + str(len(user_list)) + " User(s)")
+        # user_list = users.get(user.id)
+        # self.logger.info("Retrieved a list containing " + str(len(user_list)) + " User(s)")
+
+        # List out all the users
+        #self, limit, offset
+        # MM_user_list = list(users.list(2000,0))
+        # print(MM_user_list)
+        # for person in MM_user_list:
+        #     if 'LEFT' in person.name:
+        #         print(person)
 
         # Update a User
-        user_update = CreateUserRequest()
-        user_update.name = 'Leo Euler'
-        user_update.email = 'leo.euler' + str(randint(0, 10000)) + '@domo.com'
-        user_update.role = 'Privileged'
-        user = users.update(user.id, user_update)
-        self.logger.info("Updated User '" + user.name + "' : " + user.email)
+        # user_update = CreateUserRequest()
+        # user_update.name = 'Leo Euler'
+        # user_update.email = 'leo.euler' + str(randint(0, 10000)) + '@domo.com'
+        # user_update.role = 'Privileged'
+        # user = users.update(user.id, user_update)
+        # self.logger.info("Updated User '" + user.name + "' : " + user.email)
 
         # Delete a User
-        users.delete(user.id)
-        self.logger.info("Deleted User '" + user.name + "'")
+        # users.delete(user.id)
+        # self.logger.info("Deleted User '" + user.name + "'")
 
     def groups(self):
         # Group Docs: https://developer.domo.com/docs/domo-apis/group-apis
@@ -251,52 +264,64 @@ class DomoSDKExamples:
         groups = self.domo.groups
     
         # Build a Group
-        group_request = CreateGroupRequest()
-        group_request.name = 'Groupy Group ' + str(randint(0, 10000))
-        group_request.active = True
-        group_request.default = False
+        # group_request = CreateGroupRequest()
+        # group_request.name = 'Groupy Group ' + str(randint(0, 10000))
+        # group_request.active = True
+        # group_request.default = False
 
         # Create a Group
-        group = groups.create(group_request)
-        self.logger.info("Created Group '" + group.name + "'")
+        # group = groups.create(group_request)
+        # self.logger.info("Created Group '" + group.name + "'")
     
         # Get a Group
-        group = groups.get(group.id)
-        self.logger.info("Retrieved Group '" + group.name + "'")
+        # group = groups.get(group.id)
+        # self.logger.info("Retrieved Group '" + group.name + "'")
+
+        # List out all the users
+        # self, limit, offset
+        MM_group_list = list(groups.list(2000, 0))
+        # print(MM_group_list)
+        for group in MM_group_list:
+            user_list = groups.list_users(group.id)
+
+            for user in user_list:
+                print(group.name +' - '+ str(user))
+
+
 
         # List Groups
-        group_list = groups.get(group.id)
-        self.logger.info("Retrieved a list containing " + str(len(group_list)) + " Group(s)")
+        # group_list = groups.get(group.id)
+        # self.logger.info("Retrieved a list containing " + str(len(group_list)) + " Group(s)")
 
         # Update a Group
-        group_update = CreateGroupRequest()
-        group_update.name = 'Groupy Group ' + str(randint(0, 10000))
-        group_update.active = False
-        group_update.default = False
-        group = groups.update(group.id, group_update)
-        self.logger.info("Updated Group '" + group.name + "'")
+        # group_update = CreateGroupRequest()
+        # group_update.name = 'Groupy Group ' + str(randint(0, 10000))
+        # group_update.active = False
+        # group_update.default = False
+        # group = groups.update(group.id, group_update)
+        # self.logger.info("Updated Group '" + group.name + "'")
 
         # Add a User to a Group
-        user_list = self.domo.users.list(10, 0)  # Retrieve the first listed user
-        user = user_list[0]
-        groups.add_user(group.id, user.id)
-        self.logger.info("Added User " + str(user.id) + " to Group " + str(group.id))
+        # user_list = self.domo.users.list(10, 0)  # Retrieve the first listed user
+        # user = user_list[0]
+        # groups.add_user(group.id, user.id)
+        # self.logger.info("Added User " + str(user.id) + " to Group " + str(group.id))
 
         # List Users in a Group
-        user_list = groups.list_users(group.id)
-        self.logger.info("Retrieved a User list from a Group containing " + str(len(user_list)) + " User(s)")
+        # user_list = groups.list_users(group.id)
+        # self.logger.info("Retrieved a User list from a Group containing " + str(len(user_list)) + " User(s)")
 
         # Remove a User from a Group
-        groups.remove_user(group.id, user.id)
-        self.logger.info("Removed User " + str(user.id) + " from Group " + str(group.id))
+        # groups.remove_user(group.id, user.id)
+        # self.logger.info("Removed User " + str(user.id) + " from Group " + str(group.id))
 
         # Delete a Group
-        groups.delete(group.id)
-        self.logger.info("Deleted group '" + group.name + "'")
+        # groups.delete(group.id)
+        # self.logger.info("Deleted group '" + group.name + "'")
 
-
-examples = DomoSDKExamples()
-examples.datasets()
-examples.streams()
-examples.users()
-examples.groups()
+if __name__=="__main__":
+    examples = DomoSDKExamples()
+    # examples.datasets()
+    # examples.streams()
+    examples.users()
+    examples.groups()
