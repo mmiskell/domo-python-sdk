@@ -240,11 +240,11 @@ class DomoSDKExamples:
 
         # List out all the users
         #self, limit, offset
-        # MM_user_list = list(users.list(2000,0))
-        # print(MM_user_list)
-        # for person in MM_user_list:
-        #     if 'LEFT' in person.name:
-        #         print(person)
+        MM_user_list = list(users.list(2000,0))
+        print(MM_user_list)
+        for person in MM_user_list:
+            if 'LEFT' in person.name:
+                print(person)
 
         # Update a User
         # user_update = CreateUserRequest()
@@ -324,4 +324,4 @@ if __name__=="__main__":
     # examples.datasets()
     # examples.streams()
     examples.users()
-    examples.groups()
+    # examples.groups()
